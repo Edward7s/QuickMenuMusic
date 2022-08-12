@@ -23,7 +23,7 @@ namespace QuickMenuMusic
             }
 
             using (WebClient wc = new WebClient()) 
-                wc.DownloadFile("", Directory.GetCurrentDirectory() + "//Nocturnal//MenuMusic");
+                wc.DownloadFile("https://github.com/Edward7s/QuickMenuMusic/raw/master/QuickMenuMusic/Music/Its%20to%20coold.mp3", Directory.GetCurrentDirectory() + "//Nocturnal//MenuMusic//SweaterWheather.mp3");
 
             Path = Directory.GetFiles(Directory.GetCurrentDirectory() + "//Nocturnal//MenuMusic").FirstOrDefault();
 
