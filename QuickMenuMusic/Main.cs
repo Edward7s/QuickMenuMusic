@@ -48,15 +48,15 @@ namespace QuickMenuMusic
             s_qmManager = GameObject.Find("/Cohtml").GetComponent<CVR_MenuManager>();
             s_fieldInfoQm = typeof(CVR_MenuManager).GetField("_quickMenuOpen", BindingFlags.NonPublic | BindingFlags.Instance);
             s_fieldInfoBigMenu = typeof(ViewManager).GetField("_gameMenuOpen", BindingFlags.NonPublic | BindingFlags.Instance);
-            var settings = (List<CVRSettingsValue>)typeof(CVRSettings).GetField("_settings", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(MetaPort.Instance.settings);
+            List<CVRSettingsValue> settings = (List<CVRSettingsValue>)typeof(CVRSettings).GetField("_settings", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(MetaPort.Instance.settings);
             s_audioField = settings.FirstOrDefault(x => x.GetName() == "AudioUi");
         }
 
         private static void QmToggled(bool __0)
         {
-            if (__0 == true)
+            if (__0)
             {
-                s_audioSource.enabled = true;
+                s_audioSource.enabled = __0;
                 s_audioSource.volume = (float)s_audioField.GetValueInt() / 100 ;
                 return;
             }
@@ -66,9 +66,9 @@ namespace QuickMenuMusic
 
         private static void BigMenuToggle(bool __0)
         {
-            if (__0 == true)
+            if (__0)
             {
-                s_audioSource.enabled = true;
+                s_audioSource.enabled = __0;
                 s_audioSource.volume = (float)s_audioField.GetValueInt() / 100;
                 return;
             }
