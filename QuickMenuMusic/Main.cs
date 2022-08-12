@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ABI_RC.Core.InteractionSystem;
-using MelonLoader;
 using UnityEngine;
-using Harmony;
+using HarmonyLib;
 using System.Reflection;
 using ABI_RC.Core.Savior;
-
+using BepInEx;
 namespace QuickMenuMusic
 {
-    public class Main : MelonMod
+    [BepInPlugin("org.bepinex.plugins.QuickMenuMusicNocturnal", "QuickMenuMusic", "1.0.0.0")]
+
+    public class Main : BaseUnityPlugin
     {
         private static CVR_MenuManager s_qmManager { get; set; }
         private static ViewManager s_bigMenu { get; set; }
@@ -23,14 +21,14 @@ namespace QuickMenuMusic
         private static FieldInfo s_fieldInfoBigMenu { get; set; }
         private static CVRSettingsValue s_audioField { get; set; }
 
-        private HarmonyInstance _instance = new HarmonyInstance(Guid.NewGuid().ToString());
+        private Harmony _instance = new Harmony(Guid.NewGuid().ToString());
 
-        public override void OnApplicationStart()
+        public void Start()
         {
-            _instance.Patch(typeof(ViewManager).GetMethods().FirstOrDefault(m => m.Name == "UiStateToggle" && m.GetParameters().Length == 1), null, typeof(Main).GetMethod(nameof(BigMenuToggle), BindingFlags.NonPublic | BindingFlags.Static).ToNewHarmonyMethod());
-            _instance.Patch(typeof(CVR_MenuManager).GetMethod(nameof(CVR_MenuManager.ToggleQuickMenu)), null, typeof(Main).GetMethod(nameof(QmToggled), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).ToNewHarmonyMethod());
+            _instance.Patch(typeof(ViewManager).GetMethods().FirstOrDefault(m => m.Name == "UiStateToggle" && m.GetParameters().Length == 1), null, new HarmonyMethod(typeof(Main).GetMethod(nameof(BigMenuToggle), BindingFlags.NonPublic | BindingFlags.Static)));
+            _instance.Patch(typeof(CVR_MenuManager).GetMethod(nameof(CVR_MenuManager.ToggleQuickMenu)), null, new HarmonyMethod(typeof(Main).GetMethod(nameof(QmToggled), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)));
             new Config();
-            MelonCoroutines.Start(WaitForUi());
+            StartCoroutine(WaitForUi());
         }
 
         private static IEnumerator WaitForUi()
@@ -38,7 +36,7 @@ namespace QuickMenuMusic
             while (GameObject.Find("/Cohtml") == null) yield return null;
             s_audioSource = new GameObject("MenuMusicManager").AddComponent<AudioSource>();
             s_audioSource.transform.parent = GameObject.Find("/Cohtml").transform;
-            WWW webReq = new WWW("File://" + Config.Instance.Path);
+            WWW webReq = new WWW("File://" + QuickMenuMusic.Config.Instance.Path);
             yield return webReq;
             s_audioSource.clip = webReq.GetAudioClip(false, false);
             s_audioSource.playOnAwake = true;
