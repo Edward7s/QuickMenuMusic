@@ -54,6 +54,7 @@ namespace QuickMenuMusic
 
         private static void QmToggled(bool __0)
         {
+            
             if (__0)
             {
                 s_audioSource.enabled = __0;
